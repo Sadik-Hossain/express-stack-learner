@@ -1,5 +1,4 @@
 const express = require("express");
-const fs = require("fs");
 const cors = require("cors");
 const morgan = require("morgan");
 const app = express();
@@ -17,12 +16,35 @@ app.use(cors());
 // app.use(router);
 app.use(require("./router.js"));
 
+//* local  404 error
+// app.use((req, res, next) => {
+//   res.status(404).send(`<h1>404 page not found</h1>`);
+// });
+
+//* sending 404 error to global handler by passing it as a error obj in next()
+app.use((req, res, next) => {
+  const error = new Error(
+    `404 not found, something went wrong. please try again later`
+  );
+  error.status = 404;
+  next(error);
+});
+
+//*--------------- global error handler -----------------
+app.use((error, req, res, next) => {
+  console.log(`Error`, error);
+  //* status code thaka mane hocce amader nijeder generate kora error
+  if (error.status) {
+    return res.status(error.status).send(`<h1>${error.message}</h1>`);
+  }
+  //* ar status code provide kora na thakle bujhte hobe internal server error.
+  res.status(500).send(`<h1>server-side error/ internal server error</h1>`);
+});
+
 //* custom global middleware
 app.use(globalM); // we dont have to call fn. cz, we maintained signature.
 // app.use(globalC()); // if we used like in line: 125
 //* ---------------------------------------------------
-
-//* app.get ke router.get dara replace korlam
 
 //* server start
 app.listen(4000, () => {

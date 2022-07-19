@@ -1,6 +1,11 @@
 const fs = require("fs");
 
 exports.homeController = (req, res) => {
+  //* home route e new error throw krci, for test purpose
+  // throw new Error(`Something not right`);
+  const error = new Error(`Bad request`);
+  error.status = 400;
+  throw error;
   //   res.send("hello world");
   //   res.attachment() //for pdf or any other file
   //   res.json({
